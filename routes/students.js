@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const QRCode = require("qrcode");
-const { v4: uuidv4 } = require("uuid");
+const { randomUUID } = require("crypto");
 const Student = require("../models/Student");
 const Attendance = require("../models/Attendance");
 const { protect, adminOnly } = require("../middleware/auth");
@@ -23,7 +23,7 @@ router.post("/", protect, adminOnly, async (req, res) => {
     }
 
     // Unique, unguessable code embedded inside the QR
-    const qrCode = uuidv4();
+    const qrCode = randomUUID();
     const qrImage = await QRCode.toDataURL(qrCode, { width: 300, margin: 2 });
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -105,7 +105,7 @@ router.post("/:id/regenerate-qr", protect, adminOnly, async (req, res) => {
     const student = await Student.findById(req.params.id);
     if (!student) return res.status(404).json({ message: "Student not found" });
 
-    const qrCode = uuidv4();
+    const qrCode = randomUUID();
     const qrImage = await QRCode.toDataURL(qrCode, { width: 300, margin: 2 });
 
     student.qrCode = qrCode;
