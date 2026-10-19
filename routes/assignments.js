@@ -116,5 +116,17 @@ router.get("/my-submissions", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch submissions" });
   }
 });
+// Get all submissions across all assignments
+router.get("/all-submissions", async (req, res) => {
+  try {
+    const submissions = await Submission.find()
+      .populate("student", "name rollNumber")
+      .populate("assignment", "title");
+    res.json(submissions);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch all submissions" });
+  }
+});
+
 
 module.exports = router;
